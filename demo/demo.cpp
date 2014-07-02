@@ -1,7 +1,6 @@
 #include "demo.h"
 
 #include <IwGeomFMat.h>
-#include <IwDebugPrim.h>
 #include <IwGx.h>
 #include <IwColour.h>
 
@@ -19,6 +18,7 @@ ChipmunkDemo::ChipmunkDemo()
     , max_points(0)
     , max_constraints(0)
     , shader(NULL)
+    , resGroup(NULL)
     , demoTime(0)
     , demoTicks(0)
 {
@@ -27,7 +27,7 @@ ChipmunkDemo::ChipmunkDemo()
 
 cpSpace* ChipmunkDemo::Init()
 {
-    IwGetResManager()->LoadGroup("shaders.group");
+    resGroup = IwGetResManager()->LoadGroup("shaders.group");
     shader = (CIwGxShaderTechnique*)IwGetResManager()->GetResNamed("chipmunk2d", "CIwGxShaderTechnique");
 
     return NULL;
@@ -99,6 +99,7 @@ void ChipmunkDemo::DrawChipmunk()
     t.Set(2, pos2, col, outcol);
     triangles.push(t);
     */
+
     int nvertices = (int)triangles.size() * 3;
     CIwFVec3 *verts = IW_GX_ALLOC(CIwFVec3, nvertices);
     CIwFVec2 *aacoord = IW_GX_ALLOC(CIwFVec2, nvertices);
@@ -236,6 +237,9 @@ void ChipmunkDemo::Destroy()
 
     if (shader)
         delete shader;
+
+    if (resGroup)
+        IwGetResManager()->DestroyGroup(resGroup);
 }
 
 bool ChipmunkDemo::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightClick /*= false*/ )
@@ -413,6 +417,7 @@ void ChipmunkDemo::DrawCircle( cpVect pos, cpFloat angle, cpFloat radius, cpSpac
     t->triangles.push(tri);
 
     DrawSegment(pos, cpvadd(pos, cpvmult(cpvforangle(angle), radius - ChipmunkDebugDrawPointLineScale*0.5f)), outline, data);
+
 //    ChipmunkDebugDrawCircle(p, a, r, outline, fill);
 }
 
@@ -462,34 +467,22 @@ void ChipmunkDemo::DrawFatSegment( cpVect a, cpVect b, cpFloat radius, cpSpaceDe
     cpVect uc = {0.0f, -1.0f};
     cpVect bc = {0.0f, 1.0f};
 
-    tri.Set(0, v0, ur, fill, outline);
-    tri.Set(1, v1, br, fill, outline);
-    tri.Set(2, v2, uc, fill, outline);
+    tri.Set(0, v0, ur, fill, outline); tri.Set(1, v1, br, fill, outline); tri.Set(2, v2, uc, fill, outline);
     th->triangles.push(tri);
 
-    tri.Set(0, v3, bc, fill, outline);
-    tri.Set(1, v1, br, fill, outline);
-    tri.Set(2, v2, uc, fill, outline);
+    tri.Set(0, v3, bc, fill, outline); tri.Set(1, v1, br, fill, outline); tri.Set(2, v2, uc, fill, outline);
     th->triangles.push(tri);
 
-    tri.Set(0, v3, bc, fill, outline);
-    tri.Set(1, v4, uc, fill, outline);
-    tri.Set(2, v2, uc, fill, outline);
+    tri.Set(0, v3, bc, fill, outline); tri.Set(1, v4, uc, fill, outline); tri.Set(2, v2, uc, fill, outline);
     th->triangles.push(tri);
 
-    tri.Set(0, v3, bc, fill, outline);
-    tri.Set(1, v4, uc, fill, outline);
-    tri.Set(2, v5, bc, fill, outline);
+    tri.Set(0, v3, bc, fill, outline); tri.Set(1, v4, uc, fill, outline); tri.Set(2, v5, bc, fill, outline);
     th->triangles.push(tri);
 
-    tri.Set(0, v6, ul, fill, outline);
-    tri.Set(1, v4, uc, fill, outline);
-    tri.Set(2, v5, bc, fill, outline);
+    tri.Set(0, v6, ul, fill, outline); tri.Set(1, v4, uc, fill, outline); tri.Set(2, v5, bc, fill, outline);
     th->triangles.push(tri);
 
-    tri.Set(0, v6, ul, fill, outline);
-    tri.Set(1, v7, bl, fill, outline);
-    tri.Set(2, v5, bc, fill, outline);
+    tri.Set(0, v6, ul, fill, outline); tri.Set(1, v7, bl, fill, outline); tri.Set(2, v5, bc, fill, outline);
     th->triangles.push(tri);
 //    ChipmunkDebugDrawFatSegment(a, b, r, outline, fill);
 }
@@ -499,8 +492,8 @@ void ChipmunkDemo::DrawPolygon( int count, const cpVect *verts, cpFloat radius, 
     ChipmunkDemo* t = static_cast<ChipmunkDemo*>(*data);
 
     struct ExtrudeVerts {cpVect offset, n;};
-    size_t bytes = sizeof(struct ExtrudeVerts)*count;
-    struct ExtrudeVerts *extrude = (struct ExtrudeVerts *)alloca(bytes);
+    size_t bytes = sizeof(ExtrudeVerts)*count;
+    ExtrudeVerts *extrude = (ExtrudeVerts *)alloca(bytes);
     memset(extrude, 0, bytes);
 
     for(int i=0; i<count; i++){
@@ -512,7 +505,8 @@ void ChipmunkDemo::DrawPolygon( int count, const cpVect *verts, cpFloat radius, 
         cpVect n2 = cpvnormalize(cpvrperp(cpvsub(v2, v1)));
 
         cpVect offset = cpvmult(cpvadd(n1, n2), 1.0/(cpvdot(n1, n2) + 1.0f));
-        struct ExtrudeVerts v = {offset, n2}; extrude[i] = v;
+        extrude[i].n = n2;
+        extrude[i].offset = offset;
     }
 
     cpFloat inset = -cpfmax(0.0f, 1.0f/ChipmunkDebugDrawPointLineScale - radius);
@@ -545,31 +539,37 @@ void ChipmunkDemo::DrawPolygon( int count, const cpVect *verts, cpFloat radius, 
         cpVect innerB = cpvadd(vB, cpvmult(offsetB, inset));
 
         // Admittedly my variable naming sucks here...
+        cpVect inner0 = innerA;
+        cpVect inner1 = innerB;
         cpVect outer0 = cpvadd(innerA, cpvmult(nB, outset));
         cpVect outer1 = cpvadd(innerB, cpvmult(nB, outset));
         cpVect outer2 = cpvadd(innerA, cpvmult(offsetA, outset));
         cpVect outer3 = cpvadd(innerA, cpvmult(nA, outset));
 
+        cpVect n0 = nA;
+        cpVect n1 = nB;
+        cpVect offset0 = offsetA;
+
         Triangle tri;
 
-        tri.Set(0, innerA, fill, outline);
-        tri.Set(1, innerB, fill, outline);
-        tri.Set(2, outer1, nB, fill, outline);
+        tri.Set(0, inner0, fill, outline);
+        tri.Set(1, inner1, fill, outline);
+        tri.Set(2, outer1, n1, fill, outline);
         t->triangles.push(tri);
 
-        tri.Set(0, innerA, fill, outline);
-        tri.Set(1, outer0, nB, fill, outline);
-        tri.Set(2, outer1, nB, fill, outline);
+        tri.Set(0, inner0, fill, outline);
+        tri.Set(1, outer0, n1, fill, outline);
+        tri.Set(2, outer1, n1, fill, outline);
         t->triangles.push(tri);
 
-        tri.Set(0, innerA, fill, outline);
-        tri.Set(1, outer0, nB, fill, outline);
-        tri.Set(2, outer2, offsetA, fill, outline);
+        tri.Set(0, inner0, fill, outline);
+        tri.Set(1, outer0, n1, fill, outline);
+        tri.Set(2, outer2, offset0, fill, outline);
         t->triangles.push(tri);
 
-        tri.Set(0, innerA, fill, outline);
-        tri.Set(1, outer2, offsetA, fill, outline);
-        tri.Set(2, outer3, nA, fill, outline);
+        tri.Set(0, inner0, fill, outline);
+        tri.Set(1, outer2, offset0, fill, outline);
+        tri.Set(2, outer3, n0, fill, outline);
         t->triangles.push(tri);
     }
 //    ChipmunkDebugDrawPolygon(count, verts, r, outline, fill);

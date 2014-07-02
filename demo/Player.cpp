@@ -134,7 +134,7 @@ void Player::Update(double dt)
 	}
 	
 	// Step the space
-	cpSpaceStep(space, dt);
+	ChipmunkDemo::Update(dt);
 	
 	remainingBoost -= dt;
 	lastJumpState = jumpState >= 0;
@@ -153,7 +153,7 @@ bool Player::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightCl
     }
     else if (state == TOUCH_END)
     {
-        if (jumpState == id)
+        if (jumpState == (int)id)
         {
             jumpState = -1;
             jumpVelocity = 0;

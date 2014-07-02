@@ -99,7 +99,7 @@ void Crane::Update(double dt)
     // Set the max length of the winch servo to match the mouse's height.
 	cpSlideJointSetMax(winchServo, cpfmax(100 - lastTouchPoint.y, 50));
 	
-	cpSpaceStep(space, dt);
+	ChipmunkDemo::Update(dt);
 }
 
 bool Crane::ProcessTouch(uint32 id, cpVect pos, TouchState state, bool rightClick /*= false*/)

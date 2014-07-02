@@ -1,25 +1,6 @@
 #include "Bench.h"
 #include "chipmunk/chipmunk_unsafe.h"
 
-#define ENABLE_HASTY 0
-#if ENABLE_HASTY
-#import "cpHastySpace.h"
-
-static cpSpace *MakeHastySpace(){
-    cpSpace *space = cpHastySpaceNew();
-    cpHastySpaceSetThreads(space, 0);
-    return space;
-}
-
-#define BENCH_SPACE_NEW MakeHastySpace
-#define BENCH_SPACE_FREE cpHastySpaceFree
-#define BENCH_SPACE_STEP cpHastySpaceStep
-#else
-#define BENCH_SPACE_NEW cpSpaceNew
-#define BENCH_SPACE_FREE cpSpaceFree
-#define BENCH_SPACE_STEP cpSpaceStep
-#endif
-
 static const cpFloat bevel = 1.0;
 
 static cpVect simple_terrain_verts[] = {
@@ -37,16 +18,47 @@ static int simple_terrain_count = sizeof(simple_terrain_verts)/sizeof(cpVect);
 //cpBody bodies[1000] = {};
 //cpCircleShape circles[1000] = {};
 
-Bench::Bench()
+Bench::Bench(Benchmark b)
+    : benchmark(b)
 {
-    name = "Bouncy Hexagons";
+    name = "Benchmark - ";
+
+    timestep = 1.0 / 60.0;
 }
 
 cpSpace *Bench::Init()
 {
     ChipmunkDemo::Init();
 
-    space = Init_BouncyTerrainHexagons_500();
+    switch (benchmark)
+    {
+    case BenchSimpleTerrainCircles_1000: space = Init_SimpleTerrainCircles_1000(); name = "Bench - simple terrain, 1000 circles"; break;
+    case BenchSimpleTerrainCircles_500: space = Init_SimpleTerrainCircles_500(); name = "Bench - simple terrain, 500 circles"; break;
+    case BenchSimpleTerrainCircles_100: space = Init_SimpleTerrainCircles_100(); name = "Bench - simple terrain, 100 circles"; break;
+    case BenchSimpleTerrainBoxes_1000: space = Init_SimpleTerrainBoxes_1000(); name = "Bench - simple terrain, 1000 boxes"; break;
+    case BenchSimpleTerrainBoxes_500: space = Init_SimpleTerrainBoxes_500(); name = "Bench - simple terrain, 500 boxes"; break;
+    case BenchSimpleTerrainBoxes_100: space = Init_SimpleTerrainBoxes_100(); name = "Bench - simple terrain, 100 boxes"; break;
+    case BenchSimpleTerrainHexagons_1000: space = Init_SimpleTerrainHexagons_1000(); name = "Bench - simple terrain, 1000 hexes"; break;
+    case BenchSimpleTerrainHexagons_500: space = Init_SimpleTerrainHexagons_500(); name = "Bench - simple terrain, 500 hexes"; break;
+    case BenchSimpleTerrainHexagons_100: space = Init_SimpleTerrainHexagons_100(); name = "Bench - simple terrain, 100 hexes"; break;
+
+    case BenchSimpleTerrainVCircles_200: space = Init_SimpleTerrainVCircles_200(); name = "Bench - simple terrain, 200 var circles"; break;
+    case BenchSimpleTerrainVBoxes_200: space = Init_SimpleTerrainVBoxes_200(); name = "Bench - simple terrain, 200 var boxes"; break;
+    case BenchSimpleTerrainVHexagons_200: space = Init_SimpleTerrainVHexagons_200(); name = "Bench - simple terrain, 200 var hexes"; break;
+
+    case BenchComplexTerrainCircles_1000: space = Init_ComplexTerrainCircles_1000(); name = "Bench - complex terrain, 1000 circles"; break;
+    case BenchComplexTerrainHexagons_1000: space = Init_ComplexTerrainHexagons_1000(); name = "Bench - complex terrain, 1000 hexes"; break;
+
+    case BenchBouncyTerrainCircles_500: space = Init_BouncyTerrainCircles_500(); name = "Bench - bouncy terrain, 500 circles"; break;
+    case BenchBouncyTerrainHexagons_500: space = Init_BouncyTerrainHexagons_500(); name = "Bench - bouncy terrain, 500 hexes"; break;
+
+    case BenchNoCollide: space = Init_NoCollide(); name = "Bench - no collisions"; break;
+
+    default:
+        space = Init_BouncyTerrainHexagons_500();
+        name = "Bench - bouncy terrain, 500 hexes";
+        break;
+    }
 	
 	return space;
 }
@@ -92,7 +104,7 @@ void Bench::AddHexagon(cpSpace *space, int index, cpFloat radius){
 
 
 cpSpace * Bench::SetupSpace_SimpleTerrain(){
-        cpSpace *space = BENCH_SPACE_NEW();
+        cpSpace *space = cpSpaceNew();
         cpSpaceSetIterations(space, 10);
         cpSpaceSetGravity(space, cpv(0, -100));
         cpSpaceSetCollisionSlop(space, 0.5f);
@@ -227,7 +239,7 @@ static cpVect complex_terrain_verts[] = {
 static int complex_terrain_count = sizeof(complex_terrain_verts)/sizeof(cpVect);
 
 cpSpace *Bench::Init_ComplexTerrainCircles_1000(){
-    cpSpace *space = BENCH_SPACE_NEW();
+    cpSpace *space = cpSpaceNew();
     cpSpaceSetIterations(space, 10);
     cpSpaceSetGravity(space, cpv(0, -100));
     cpSpaceSetCollisionSlop(space, 0.5f);
@@ -252,7 +264,7 @@ cpSpace *Bench::Init_ComplexTerrainCircles_1000(){
 }
 
 cpSpace *Bench::Init_ComplexTerrainHexagons_1000(){
-    cpSpace *space = BENCH_SPACE_NEW();
+    cpSpace *space = cpSpaceNew();
     cpSpaceSetIterations(space, 10);
     cpSpaceSetGravity(space, cpv(0, -100));
     cpSpaceSetCollisionSlop(space, 0.5f);
@@ -332,7 +344,7 @@ static cpVect bouncy_terrain_verts[] = {
 static int bouncy_terrain_count = sizeof(bouncy_terrain_verts)/sizeof(cpVect);
 
 cpSpace *Bench::Init_BouncyTerrainCircles_500(){
-    cpSpace *space = BENCH_SPACE_NEW();
+    cpSpace *space = cpSpaceNew();
     cpSpaceSetIterations(space, 10);
 
     cpVect offset = cpv(-320, -240);
@@ -357,7 +369,7 @@ cpSpace *Bench::Init_BouncyTerrainCircles_500(){
 }
 
 cpSpace *Bench::Init_BouncyTerrainHexagons_500(){
-    cpSpace *space = BENCH_SPACE_NEW();
+    cpSpace *space = cpSpaceNew();
     cpSpaceSetIterations(space, 10);
 
     cpVect offset = cpv(-320, -240);
@@ -398,7 +410,7 @@ cpBool Bench::NoCollide_begin(cpArbiter *arb, cpSpace *space, void *data){
 
 
 cpSpace *Bench::Init_NoCollide(){
-    cpSpace *space = BENCH_SPACE_NEW();
+    cpSpace *space = cpSpaceNew();
     cpSpaceSetIterations(space, 10);
 
     cpCollisionHandler *handler = cpSpaceAddCollisionHandler(space, 2, 2);
@@ -442,45 +454,3 @@ cpSpace *Bench::Init_NoCollide(){
 
     return space;
 }
-
-
-// TODO ideas:
-// addition/removal
-// Memory usage? (too small to matter?)
-// http://forums.tigsource.com/index.php?topic=18077.msg518578#msg518578
-
-
-// Build benchmark list
-void Bench::Update(double dt){
-    BENCH_SPACE_STEP(space, dt);
-}
-
-void Bench::Destroy(){
-    ChipmunkDemo::Destroy();
-    BENCH_SPACE_FREE(space);
-}
-
-/*
-#define BENCH(n) {"benchmark - " #n, 1.0/60.0, init_##n, update, 	ChipmunkDemoDefaultDrawImpl, destroy}
-ChipmunkDemo bench_list[] = {
-    BENCH(SimpleTerrainCircles_1000),
-    BENCH(SimpleTerrainCircles_500),
-    BENCH(SimpleTerrainCircles_100),
-    BENCH(SimpleTerrainBoxes_1000),
-    BENCH(SimpleTerrainBoxes_500),
-    BENCH(SimpleTerrainBoxes_100),
-    BENCH(SimpleTerrainHexagons_1000),
-    BENCH(SimpleTerrainHexagons_500),
-    BENCH(SimpleTerrainHexagons_100),
-    BENCH(SimpleTerrainVCircles_200),
-    BENCH(SimpleTerrainVBoxes_200),
-    BENCH(SimpleTerrainVHexagons_200),
-    BENCH(ComplexTerrainCircles_1000),
-    BENCH(ComplexTerrainHexagons_1000),
-    BENCH(BouncyTerrainCircles_500),
-    BENCH(BouncyTerrainHexagons_500),
-    BENCH(NoCollide),
-};
-
-int bench_count = sizeof(bench_list)/sizeof(ChipmunkDemo);
-*/

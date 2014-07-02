@@ -6,14 +6,39 @@
 class Bench : public ChipmunkDemo
 {
 public:
-    Bench();
+    enum Benchmark
+    {
+        BenchSimpleTerrainCircles_1000,
+        BenchSimpleTerrainCircles_500,
+        BenchSimpleTerrainCircles_100,
+        BenchSimpleTerrainBoxes_1000,
+        BenchSimpleTerrainBoxes_500,
+        BenchSimpleTerrainBoxes_100,
+        BenchSimpleTerrainHexagons_1000,
+        BenchSimpleTerrainHexagons_500,
+        BenchSimpleTerrainHexagons_100,
+
+        BenchSimpleTerrainVCircles_200,
+        BenchSimpleTerrainVBoxes_200,
+        BenchSimpleTerrainVHexagons_200,
+
+        BenchComplexTerrainCircles_1000,
+        BenchComplexTerrainHexagons_1000,
+
+        BenchBouncyTerrainCircles_500,
+        BenchBouncyTerrainHexagons_500,
+
+        BenchNoCollide,
+    };
+
+    Bench(Benchmark b = BenchBouncyTerrainHexagons_500);
     ~Bench() {};
 
     virtual cpSpace* Init();
-    virtual void Update(double dt);
-    virtual void Destroy();
 
 protected:
+    Benchmark benchmark;
+
     static void AddCircle(cpSpace *space, int index, cpFloat radius);
     static void AddBox(cpSpace *space, int index, cpFloat size);
     static void AddHexagon(cpSpace *space, int index, cpFloat radius);

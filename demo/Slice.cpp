@@ -157,7 +157,7 @@ bool Slice::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightCli
         }
         else if (state == ChipmunkDemo::TOUCH_MOVE)
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 lastTouchPoint = pos;
                 return true;
@@ -165,7 +165,7 @@ bool Slice::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightCli
         }
         else /* if (state == ChipmunkDemo::TOUCH_END) */
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 struct SliceContext context = {sliceStart, pos, space};
                 cpSpaceSegmentQuery(space, sliceStart, pos, 0.0, GRAB_FILTER, (cpSpaceSegmentQueryFunc)SliceQuery, &context);

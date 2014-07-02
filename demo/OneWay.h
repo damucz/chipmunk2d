@@ -22,7 +22,7 @@ protected:
 
     OneWayPlatform platformInstance;
 
-    static cpBool OneWay::PreSolve(cpArbiter *arb, cpSpace *space, void *ignore);
+    static cpBool PreSolve(cpArbiter *arb, cpSpace *space, void *ignore);
 };
 
 #endif

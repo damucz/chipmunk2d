@@ -20,10 +20,10 @@
 #MemoryBreakpoint=79
 
 [GX]	
-DataCacheSize=4194304
+DataCacheSize=8388608
 DisplayFrameRate=1
 
 [S3E]
-SysStackSize=65536     # defaults to 32768
+SysStackSize=65536    # defaults to 32768
 MemSize=500000000
 MemSizeDebug=500000000

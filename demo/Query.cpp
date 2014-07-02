@@ -136,7 +136,7 @@ bool Query::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightCli
         }
         else if (state == TOUCH_MOVE)
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 lastTouchPoint = pos;
                 return true;
@@ -144,7 +144,7 @@ bool Query::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightCli
         }
         else /* if (state == TOUCH_END) */
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 lastTouchPoint = pos;
                 touchId = -1;

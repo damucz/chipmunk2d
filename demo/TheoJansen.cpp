@@ -85,7 +85,7 @@ void TheoJansen::Update(double dt)
 	cpSimpleMotorSetRate(motor, rate);
 	cpConstraintSetMaxForce(motor, (rate) ? 100000.0f : 0.0f);
 	
-	cpSpaceStep(space, dt);
+	ChipmunkDemo::Update(dt);
 }
 
 void TheoJansen::MakeLeg(cpSpace *space, cpFloat side, cpFloat offset, cpBody *chassis, cpBody *crank, cpVect anchor)
@@ -150,7 +150,7 @@ bool TheoJansen::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rig
         }
         else if (state == ChipmunkDemo::TOUCH_MOVE)
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 lastTouchPoint = pos;
                 return true;
@@ -158,7 +158,7 @@ bool TheoJansen::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rig
         }
         else /* if (state == ChipmunkDemo::TOUCH_END) */
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 touchId = -1;
                 lastTouchPoint = pos;

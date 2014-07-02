@@ -32,11 +32,38 @@
 #include <s3eKeyboard.h>
 #include <s3ePointer.h>
 
+//#define ALL_BENCHMARKS
+
 enum Demo
 {
     DFirst,
 
-    DBench,
+#ifndef ALL_BENCHMARKS
+    DBenchBouncyTerrainHexagons_500,
+#else
+    DBenchSimpleTerrainCircles_1000,
+    DBenchSimpleTerrainCircles_500,
+    DBenchSimpleTerrainCircles_100,
+    DBenchSimpleTerrainBoxes_1000,
+    DBenchSimpleTerrainBoxes_500,
+    DBenchSimpleTerrainBoxes_100,
+    DBenchSimpleTerrainHexagons_1000,
+    DBenchSimpleTerrainHexagons_500,
+    DBenchSimpleTerrainHexagons_100,
+
+    DBenchSimpleTerrainVCircles_200,
+    DBenchSimpleTerrainVBoxes_200,
+    DBenchSimpleTerrainVHexagons_200,
+
+    DBenchComplexTerrainCircles_1000,
+    DBenchComplexTerrainHexagons_1000,
+
+    DBenchBouncyTerrainCircles_500,
+    DBenchBouncyTerrainHexagons_500,
+
+    DBenchNoCollide,
+#endif
+
     DBuoyancy,
     DChains,
     DContactGraph,
@@ -68,7 +95,7 @@ enum Demo
 };
 
 ChipmunkDemo *demo = NULL;
-Demo currentDemo = DPyramidStack;
+Demo currentDemo = (Demo)((int)DFirst+1);
 static const int viewSize = 650;
 uint32 screenWidth = 0;
 uint32 screenHeight = 0;
@@ -89,9 +116,32 @@ ChipmunkDemo* CreateDemo(Demo d)
 
     switch(d)
     {
-    case DPyramidStack: demo = new PyramidStack(); break;
-    case DPyramidTopple: demo = new PyramidTopple(); break;
-    case DBench: demo = new Bench(); break;
+#ifndef ALL_BENCHMARKS
+    case DBenchBouncyTerrainHexagons_500: demo = new Bench(Bench::BenchBouncyTerrainHexagons_500); break;
+#else
+    case DBenchSimpleTerrainCircles_1000: demo = new Bench(Bench::BenchSimpleTerrainCircles_1000); break;
+    case DBenchSimpleTerrainCircles_500: demo = new Bench(Bench::BenchSimpleTerrainCircles_500); break;
+    case DBenchSimpleTerrainCircles_100: demo = new Bench(Bench::BenchSimpleTerrainCircles_100); break;
+    case DBenchSimpleTerrainBoxes_1000: demo = new Bench(Bench::BenchSimpleTerrainBoxes_1000); break;
+    case DBenchSimpleTerrainBoxes_500: demo = new Bench(Bench::BenchSimpleTerrainBoxes_500); break;
+    case DBenchSimpleTerrainBoxes_100: demo = new Bench(Bench::BenchSimpleTerrainBoxes_100); break;
+    case DBenchSimpleTerrainHexagons_1000: demo = new Bench(Bench::BenchSimpleTerrainHexagons_1000); break;
+    case DBenchSimpleTerrainHexagons_500: demo = new Bench(Bench::BenchSimpleTerrainHexagons_500); break;
+    case DBenchSimpleTerrainHexagons_100: demo = new Bench(Bench::BenchSimpleTerrainHexagons_100); break;
+
+    case DBenchSimpleTerrainVCircles_200: demo = new Bench(Bench::BenchSimpleTerrainVCircles_200); break;
+    case DBenchSimpleTerrainVBoxes_200: demo = new Bench(Bench::BenchSimpleTerrainVBoxes_200); break;
+    case DBenchSimpleTerrainVHexagons_200: demo = new Bench(Bench::BenchSimpleTerrainVHexagons_200); break;
+
+    case DBenchComplexTerrainCircles_1000: demo = new Bench(Bench::BenchComplexTerrainCircles_1000); break;
+    case DBenchComplexTerrainHexagons_1000: demo = new Bench(Bench::BenchComplexTerrainHexagons_1000); break;
+
+    case DBenchBouncyTerrainCircles_500: demo = new Bench(Bench::BenchBouncyTerrainCircles_500); break;
+    case DBenchBouncyTerrainHexagons_500: demo = new Bench(Bench::BenchBouncyTerrainHexagons_500); break;
+
+    case DBenchNoCollide: demo = new Bench(Bench::BenchNoCollide); break;
+#endif
+
     case DBuoyancy: demo = new Buoyancy(); break;
     case DChains: demo = new Chains(); break;
     case DContactGraph: demo = new ContactGraph(); break;
@@ -106,6 +156,8 @@ ChipmunkDemo* CreateDemo(Demo d)
     case DPlayer: demo = new Player(); break;
     case DPlink: demo = new Plink(); break;
     case DPump: demo = new Pump(); break;
+    case DPyramidStack: demo = new PyramidStack(); break;
+    case DPyramidTopple: demo = new PyramidTopple(); break;
     case DQuery: demo = new Query(); break;
     case DShatter: demo = new Shatter(); break;
     case DSlice: demo = new Slice(); break;
@@ -132,7 +184,10 @@ void NextDemo()
 
     currentDemo = (Demo)current;
     if (demo)
+    {
+        demo->Destroy();
         delete demo;
+    }
     demo = CreateDemo(currentDemo);
 
     start = s3eTimerGetMs();
@@ -147,7 +202,10 @@ void PrevDemo()
 
     currentDemo = (Demo)current;
     if (demo)
+    {
+        demo->Destroy();
         delete demo;
+    }
     demo = CreateDemo(currentDemo);
 
     start = s3eTimerGetMs();
@@ -184,7 +242,7 @@ void ProcessTouch(uint32 id, uint32 x, uint32 y, ChipmunkDemo::TouchState state)
     }
     else /* if (state == ChipmunkDemo::TOUCH_END) */
     {
-        if (id == rightClick)
+        if ((int)id == rightClick)
         {
             rightClick = -1;
             return;

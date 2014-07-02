@@ -14,6 +14,8 @@
 extern cpShapeFilter GRAB_FILTER;
 extern cpShapeFilter NOT_GRABBABLE_FILTER;
 
+class CIwResGroup;
+
 class ChipmunkDemo {
 public:
     enum TouchState
@@ -120,6 +122,7 @@ protected:
 
     std::queue<Triangle> triangles;
     CIwGxShaderTechnique* shader;
+    CIwResGroup* resGroup;
 
     static cpFloat frand(void);
     static cpVect frand_unit_circle();

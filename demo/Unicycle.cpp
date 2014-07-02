@@ -158,7 +158,7 @@ bool Unicycle::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool right
         }
         else if (state == ChipmunkDemo::TOUCH_MOVE)
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 lastTouchPoint = pos;
                 return true;
@@ -166,7 +166,7 @@ bool Unicycle::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool right
         }
         else /* if (state == ChipmunkDemo::TOUCH_END) */
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 touchId = -1;
                 lastTouchPoint = pos;

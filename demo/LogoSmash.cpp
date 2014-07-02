@@ -4,7 +4,7 @@ static const int image_width = 188;
 static const int image_height = 35;
 static const int image_row_length = 24;
 
-static const unsigned char image_bitmap[] = {
+static const int image_bitmap[] = {
     15,-16,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,7,-64,15,63,-32,-2,0,0,0,0,0,0,0,
     0,0,0,0,0,0,0,0,0,0,0,31,-64,15,127,-125,-1,-128,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
     0,0,0,127,-64,15,127,15,-1,-64,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,-1,-64,15,-2,
@@ -96,7 +96,7 @@ cpSpace *LogoSmash::Init()
 
 int LogoSmash::GetPixel(int x, int y)
 {
-	return (image_bitmap[(x>>3) + y*image_row_length]>>(~x&0x7)) & 1;
+	return ((char)image_bitmap[(x>>3) + y*image_row_length]>>(~x&0x7)) & 1;
 }
 
 void LogoSmash::DrawDotCallback(cpBody *body, void *data)

@@ -170,7 +170,7 @@ bool Pump::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightClic
         }
         else if (state == TOUCH_MOVE)
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 cpFloat coef = (2.0f + (pos.y - startTouchPoint.y))/3.0f;
                 cpFloat rate = (pos.x - startTouchPoint.x)*30.0f*coef;
@@ -183,7 +183,7 @@ bool Pump::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightClic
         }
         else /* if (state == TOUCH_END) */
         {
-            if (touchId == id)
+            if (touchId == (int)id)
             {
                 touchId = -1;
                 cpSimpleMotorSetRate(motor, 0);
