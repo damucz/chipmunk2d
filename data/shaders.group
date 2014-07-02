@@ -1,0 +1,7 @@
+CIwResGroup
+{
+    name "shaders"
+    shared true
+
+	"./chipmunk2d.itx"
+}

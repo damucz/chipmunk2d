@@ -1,0 +1,32 @@
+files
+{
+	[demo]
+	(demo)
+	"*.cpp"
+	"*.h"
+}
+
+includepaths 
+{
+	demo
+}
+
+options 
+{ 
+	optimise-speed
+	module_path="$MARMALADE_ROOT/examples;../libs"
+    cflags="-std=gnu++0x"
+}
+
+subprojects
+{
+	iwgx
+	#chipmunk2d
+	chipmunk2d/chipmunk2d-source
+}
+
+assets
+{
+	(data) 
+	"."
+}

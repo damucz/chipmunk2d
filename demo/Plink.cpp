@@ -1,0 +1,110 @@
+#include "Plink.h"
+
+#define NUM_VERTS 5
+
+cpFloat Plink::pentagon_mass = 0.0f;
+cpFloat Plink::pentagon_moment = 0.0f;
+
+Plink::Plink()
+{
+    name = "Plink";
+
+    timestep = 1.0 / 60.0;
+}
+
+cpSpace *Plink::Init()
+{
+    ChipmunkDemo::Init();
+
+    message = "Hold right bottom corner and tap the pentagons to make them static/dynamic.";
+
+    space = cpSpaceNew();
+    cpSpaceSetIterations(space, 5);
+    cpSpaceSetGravity(space, cpv(0, -100));
+
+    cpBody *body, *staticBody = cpSpaceGetStaticBody(space);
+    cpShape *shape;
+
+    // Vertexes for a triangle shape.
+    cpVect tris[] = {
+        cpv(-15,-15),
+        cpv(  0, 10),
+        cpv( 15,-15),
+    };
+
+    // Create the static triangles.
+    for(int i=0; i<9; i++){
+        for(int j=0; j<6; j++){
+            cpFloat stagger = (j%2)*40;
+            cpVect offset = cpv(i*80 - 320 + stagger, j*70 - 240);
+            shape = cpSpaceAddShape(space, cpPolyShapeNew(staticBody, 3, tris, cpTransformTranslate(offset), 0.0));
+            cpShapeSetElasticity(shape, 1.0f);
+            cpShapeSetFriction(shape, 1.0f);
+            cpShapeSetFilter(shape, NOT_GRABBABLE_FILTER);
+        }
+    }
+
+    // Create vertexes for a pentagon shape.
+    cpVect verts[NUM_VERTS];
+    for(int i=0; i<NUM_VERTS; i++){
+        cpFloat angle = -2*M_PI*i/((cpFloat) NUM_VERTS);
+        verts[i] = cpv(10*cos(angle), 10*sin(angle));
+    }
+
+    pentagon_mass = 1.0;
+    pentagon_moment = cpMomentForPoly(1.0f, NUM_VERTS, verts, cpvzero, 0.0f);
+
+    // Add lots of pentagons.
+    for(int i=0; i<300; i++){
+        body = cpSpaceAddBody(space, cpBodyNew(pentagon_mass, pentagon_moment));
+        cpFloat x = rand()/(cpFloat)RAND_MAX*640 - 320;
+        cpBodySetPosition(body, cpv(x, 350));
+
+        shape = cpSpaceAddShape(space, cpPolyShapeNew(body, NUM_VERTS, verts, cpTransformIdentity, 0.0));
+        cpShapeSetElasticity(shape, 0.0f);
+        cpShapeSetFriction(shape, 0.4f);
+    }
+	
+	return space;
+}
+
+// Iterate over all of the bodies and reset the ones that have fallen offscreen.
+void Plink::EachBody(cpBody *body, void *unused)
+{
+	cpVect pos = cpBodyGetPosition(body);
+	if(pos.y < -260 || cpfabs(pos.x) > 340){
+		cpFloat x = rand()/(cpFloat)RAND_MAX*640 - 320;
+		cpBodySetPosition(body, cpv(x, 260));
+	}
+}
+
+void Plink::Update(double dt)
+{
+	cpSpaceEachBody(space, &EachBody, NULL);
+	
+    ChipmunkDemo::Update(dt);
+}
+
+bool Plink::ProcessTouch( uint32 id, cpVect pos, TouchState state, bool rightClick /*= false*/ )
+{
+    if (rightClick){
+        if (state == ChipmunkDemo::TOUCH_START)
+        {
+            cpShape *nearest = cpSpacePointQueryNearest(space, pos, 0.0, GRAB_FILTER, NULL);
+            if(nearest){
+                cpBody *body = cpShapeGetBody(nearest);
+                if(cpBodyGetType(body) == CP_BODY_TYPE_STATIC){
+                    cpBodySetType(body, CP_BODY_TYPE_DYNAMIC);
+                    cpBodySetMass(body, pentagon_mass);
+                    cpBodySetMoment(body, pentagon_moment);
+                } else if(cpBodyGetType(body) == CP_BODY_TYPE_DYNAMIC) {
+                    cpBodySetType(body, CP_BODY_TYPE_STATIC);
+                }
+
+                return true;
+            }
+        }
+    }
+
+    return ChipmunkDemo::ProcessTouch(id, pos, state, rightClick);
+}

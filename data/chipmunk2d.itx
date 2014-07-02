@@ -1,0 +1,70 @@
+CIwGxShaderTechnique
+{
+    name "chipmunk2d"
+
+    shader "vertex"
+    {
+        attribute highp vec4    inVert;      // vertex stream
+        attribute mediump vec2  inUV0;       // aa_coord stream
+		attribute mediump vec2  inUV1;       // alpha for both colors
+		attribute mediump vec3  inTangent;   // fill color
+		attribute mediump vec3  inBiTangent; // outline color
+		
+        uniform highp mat4      inPMVMat;    // transform to projected space
+
+        varying mediump vec2    outAACoord;  // final aa_coord
+        varying lowp vec4       outFillColor;// final vertex colour
+		varying lowp vec4       outOutColor; // final vertex outline
+
+        void main(void)
+        {
+            // set vertex position in projected space
+            gl_Position = inPMVMat * inVert;
+
+			outAACoord = inUV0;
+			outFillColor = vec4(inTangent, inUV1.x);
+			outOutColor = vec4(inBiTangent, inUV1.y);
+        } 
+    }
+
+    shader "fragment"
+    {
+		#extension GL_OES_standard_derivatives : enable
+		
+        precision mediump float;
+        
+        // Input to the fragment shader (matches vertex shader output above)
+        varying mediump vec2    outAACoord;  // final aa_coord
+        varying lowp vec4       outFillColor;// final vertex colour
+		varying lowp vec4       outOutColor; // final vertex outline
+		
+		float aa_step(float t1, float t2, float f)
+		{
+			//return step(t2, f);
+			return smoothstep(t1, t2, f);
+		}
+		
+        void main(void)
+        {
+			float l = length(outAACoord);
+			
+			// Different pixel size estimations are handy.
+			//float fw = fwidth(l);
+			//float fw = length(vec2(dFdx(l), dFdy(l)));
+			float fw = length(fwidth(outAACoord));
+			
+			// Outline width threshold.
+			float ow = 1.0 - fw;//*u_outline_coef;
+			
+			// Fill/outline color.
+			float fo_step = aa_step(max(ow - fw, 0.0), ow, l);
+			vec4 fo_color = mix(outFillColor, outOutColor, fo_step);
+			
+			// Use pre-multiplied alpha.
+			float alpha = 1.0 - aa_step(1.0 - fw, 1.0, l);
+			gl_FragColor = fo_color*(fo_color.a*alpha);
+			//gl_FragColor = vec4(outFillColor.r, outFillColor.g, outFillColor.b, 1.0);
+			//gl_FragColor = vec4(1.0);
+        } 
+    } 
+}     

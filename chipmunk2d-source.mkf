@@ -1,0 +1,26 @@
+includepaths
+{
+	include
+	src
+}
+
+define CHIPMUNK2D_AVAILABLE
+
+files
+{
+	(src)
+	"*.cpp"
+	"*.h"
+	
+	(include/chipmunk)
+	"*.h"
+	
+	(doc)
+	chipmunk2d.defines.txt
+}
+
+options 
+{ 
+	optimise-speed
+    cflags="-std=gnu++0x"
+}

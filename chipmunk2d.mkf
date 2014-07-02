@@ -1,0 +1,21 @@
+includepaths
+{
+	include
+	src
+}
+
+define CHIPMUNK2D_AVAILABLE
+
+library
+{
+	".,chipmunk2d"
+}
+
+files
+{
+	(source)
+	"*.h"
+	
+	(doc)
+	chipmunk2d.defines.txt
+}

@@ -1,0 +1,6 @@
+option lib
+
+subprojects
+{
+	chipmunk2d-source
+}
