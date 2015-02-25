@@ -13,7 +13,7 @@ library
 
 files
 {
-	(source)
+	(src)
 	"*.h"
 	
 	(doc)
