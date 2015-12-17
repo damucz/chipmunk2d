@@ -53,7 +53,7 @@ static void *
 handlerSetTrans(cpCollisionHandler *handler, void *unused)
 {
 	cpCollisionHandler *copy = (cpCollisionHandler *)cpcalloc(1, sizeof(cpCollisionHandler));
-	(*copy) = (*handler);
+	memcpy(copy, handler, sizeof(cpCollisionHandler));
 	
 	return copy;
 }
@@ -152,7 +152,7 @@ cpSpaceInit(cpSpace *space)
 	space->sleepingComponents = cpArrayNew(0);
 	space->rousedBodies = cpArrayNew(0);
 	
-	space->sleepTimeThreshold = cpINFINITY;
+	space->sleepTimeThreshold = INFINITY;
 	space->idleSpeedThreshold = 0.0f;
 	
 	space->arbiters = cpArrayNew(0);
@@ -164,7 +164,7 @@ cpSpaceInit(cpSpace *space)
 	space->constraints = cpArrayNew(0);
 	
 	space->usesWildcards = cpFalse;
-	space->defaultHandler = cpCollisionHandlerDoNothing;
+	memcpy(&space->defaultHandler, &cpCollisionHandlerDoNothing, sizeof(cpCollisionHandler));
 	space->collisionHandlers = cpHashSetNew(0, (cpHashSetEqlFunc)handlerSetEql);
 	
 	space->postStepCallbacks = cpArrayNew(0);
@@ -254,6 +254,12 @@ void
 cpSpaceSetGravity(cpSpace *space, cpVect gravity)
 {
 	space->gravity = gravity;
+	
+	// Wake up all of the bodies since the gravity changed.
+	cpArray *components = space->sleepingComponents;
+	for(int i=0; i<components->num; i++){
+		cpBodyActivate((cpBody *)components->arr[i]);
+	}
 }
 
 cpFloat
@@ -379,7 +385,7 @@ cpSpaceUseWildcardDefaultHandler(cpSpace *space)
 	// Spaces default to using the slightly faster "do nothing" default handler until wildcards are potentially needed.
 	if(!space->usesWildcards){
 		space->usesWildcards = cpTrue;
-		space->defaultHandler = cpCollisionHandlerDefault;
+		memcpy(&space->defaultHandler, &cpCollisionHandlerDefault, sizeof(cpCollisionHandler));
 	}
 }
 
@@ -392,12 +398,8 @@ cpCollisionHandler *cpSpaceAddDefaultCollisionHandler(cpSpace *space)
 cpCollisionHandler *cpSpaceAddCollisionHandler(cpSpace *space, cpCollisionType a, cpCollisionType b)
 {
 	cpHashValue hash = CP_HASH_PAIR(a, b);
-	// TODO should use space->defaultHandler values instead?
-	cpCollisionHandler temp = {a, b, DefaultBegin, DefaultPreSolve, DefaultPostSolve, DefaultSeparate, NULL};
-	
-	cpHashSet *handlers = space->collisionHandlers;
-	cpCollisionHandler *handler = (cpCollisionHandler*)cpHashSetFind(handlers, hash, &temp);
-	return (handler ? handler : (cpCollisionHandler*)cpHashSetInsert(handlers, hash, &temp, (cpHashSetTransFunc)handlerSetTrans, NULL));
+	cpCollisionHandler handler = {a, b, DefaultBegin, DefaultPreSolve, DefaultPostSolve, DefaultSeparate, NULL};
+	return (cpCollisionHandler*)cpHashSetInsert(space->collisionHandlers, hash, &handler, (cpHashSetTransFunc)handlerSetTrans, NULL);
 }
 
 cpCollisionHandler *
@@ -406,11 +408,8 @@ cpSpaceAddWildcardHandler(cpSpace *space, cpCollisionType type)
 	cpSpaceUseWildcardDefaultHandler(space);
 	
 	cpHashValue hash = CP_HASH_PAIR(type, CP_WILDCARD_COLLISION_TYPE);
-	cpCollisionHandler temp = {type, CP_WILDCARD_COLLISION_TYPE, AlwaysCollide, AlwaysCollide, DoNothing, DoNothing, NULL};
-	
-	cpHashSet *handlers = space->collisionHandlers;
-	cpCollisionHandler *handler = (cpCollisionHandler*)cpHashSetFind(handlers, hash, &temp);
-	return (handler ? handler : (cpCollisionHandler*)cpHashSetInsert(handlers, hash, &temp, (cpHashSetTransFunc)handlerSetTrans, NULL));
+	cpCollisionHandler handler = {type, CP_WILDCARD_COLLISION_TYPE, AlwaysCollide, AlwaysCollide, DoNothing, DoNothing, NULL};
+	return (cpCollisionHandler*)cpHashSetInsert(space->collisionHandlers, hash, &handler, (cpHashSetTransFunc)handlerSetTrans, NULL);
 }
 
 

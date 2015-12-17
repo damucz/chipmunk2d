@@ -160,8 +160,8 @@ cpBool Buoyancy::WaterPreSolve(cpArbiter *arb, cpSpace *space, void *ptr)
     cpVect centroid = cpCentroidForPoly(clippedCount, clipped);
 
     cpDataPointer data = ptr;
-    DrawPolygon(clippedCount, clipped, 0.0f, RGBAColor(0, 0, 1, 1), RGBAColor(0, 0, 1, 0.1f), &data);
-    DrawDot(5, centroid, RGBAColor(0, 0, 1, 1), &data);
+    DrawPolygon(clippedCount, clipped, 0.0f, RGBAColor(0, 0, 1, 1), RGBAColor(0, 0, 1, 0.1f), data);
+    DrawDot(5, centroid, RGBAColor(0, 0, 1, 1), data);
 
     cpFloat dt = cpSpaceGetCurrentTimeStep(space);
     cpVect g = cpSpaceGetGravity(space);

@@ -222,7 +222,7 @@ cpShapeUpdate(cpShape *shape, cpTransform transform)
 cpFloat
 cpShapePointQuery(const cpShape *shape, cpVect p, cpPointQueryInfo *info)
 {
-	cpPointQueryInfo blank = {NULL, cpvzero, cpINFINITY, cpvzero};
+	cpPointQueryInfo blank = {NULL, cpvzero, INFINITY, cpvzero};
 	if(info){
 		(*info) = blank;
 	} else {

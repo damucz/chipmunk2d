@@ -92,9 +92,9 @@ cpBool Smooth::DrawContacts(cpArbiter *arb, cpSpace *space, void *data){
 
 		cpVect pA = set.points[i].pointA;
         cpVect pB = set.points[i].pointB;
-		th->DrawDot(6.0, pA, RGBAColor(1, 0, 0, 1), &data);
+		th->DrawDot(6.0, pA, RGBAColor(1, 0, 0, 1), data);
 		//th->DrawSegment(p, cpvadd(p, cpvmult(set.points[i].normal, 10.0)), RGBAColor(1, 0, 0, 1));
-        th->DrawSegment(pA, pB, RGBAColor(1, 0, 0, 1), &data);
+        th->DrawSegment(pA, pB, RGBAColor(1, 0, 0, 1), data);
 	}
 	
 	return cpFalse;

@@ -30,17 +30,17 @@ cpSpaceDebugDrawShape(cpShape *shape, cpSpaceDebugDrawOptions *options)
 	cpDataPointer data = options->data;
 	
 	cpSpaceDebugColor outline_color = options->shapeOutlineColor;
-	cpSpaceDebugColor fill_color = options->colorForShape(shape, &data);
+	cpSpaceDebugColor fill_color = options->colorForShape(shape, data);
 	
 	switch(shape->klass->type){
 		case CP_CIRCLE_SHAPE: {
 			cpCircleShape *circle = (cpCircleShape *)shape;
-			options->drawCircle(circle->tc, body->a, circle->r, outline_color, fill_color, &data);
+			options->drawCircle(circle->tc, body->a, circle->r, outline_color, fill_color, data);
 			break;
 		}
 		case CP_SEGMENT_SHAPE: {
 			cpSegmentShape *seg = (cpSegmentShape *)shape;
-			options->drawFatSegment(seg->ta, seg->tb, seg->r, outline_color, fill_color, &data);
+			options->drawFatSegment(seg->ta, seg->tb, seg->r, outline_color, fill_color, data);
 			break;
 		}
 		case CP_POLY_SHAPE: {
@@ -51,7 +51,7 @@ cpSpaceDebugDrawShape(cpShape *shape, cpSpaceDebugDrawOptions *options)
 			cpVect *verts = (cpVect *)alloca(count*sizeof(cpVect));
 			
 			for(int i=0; i<count; i++) verts[i] = planes[i].v0;
-			options->drawPolygon(count, verts, poly->r, outline_color, fill_color, &data);
+			options->drawPolygon(count, verts, poly->r, outline_color, fill_color, data);
 			break;
 		}
 		default: break;
@@ -92,26 +92,26 @@ cpSpaceDebugDrawConstraint(cpConstraint *constraint, cpSpaceDebugDrawOptions *op
 		cpVect a = cpTransformPoint(body_a->transform, joint->anchorA);
 		cpVect b = cpTransformPoint(body_b->transform, joint->anchorB);
 		
-		options->drawDot(5, a, color, &data);
-		options->drawDot(5, b, color, &data);
-		options->drawSegment(a, b, color, &data);
+		options->drawDot(5, a, color, data);
+		options->drawDot(5, b, color, data);
+		options->drawSegment(a, b, color, data);
 	} else if(cpConstraintIsSlideJoint(constraint)){
 		cpSlideJoint *joint = (cpSlideJoint *)constraint;
 	
 		cpVect a = cpTransformPoint(body_a->transform, joint->anchorA);
 		cpVect b = cpTransformPoint(body_b->transform, joint->anchorB);
 		
-		options->drawDot(5, a, color, &data);
-		options->drawDot(5, b, color, &data);
-		options->drawSegment(a, b, color, &data);
+		options->drawDot(5, a, color, data);
+		options->drawDot(5, b, color, data);
+		options->drawSegment(a, b, color, data);
 	} else if(cpConstraintIsPivotJoint(constraint)){
 		cpPivotJoint *joint = (cpPivotJoint *)constraint;
 	
 		cpVect a = cpTransformPoint(body_a->transform, joint->anchorA);
 		cpVect b = cpTransformPoint(body_b->transform, joint->anchorB);
 
-		options->drawDot(5, a, color, &data);
-		options->drawDot(5, b, color, &data);
+		options->drawDot(5, a, color, data);
+		options->drawDot(5, b, color, data);
 	} else if(cpConstraintIsGrooveJoint(constraint)){
 		cpGrooveJoint *joint = (cpGrooveJoint *)constraint;
 	
@@ -119,8 +119,8 @@ cpSpaceDebugDrawConstraint(cpConstraint *constraint, cpSpaceDebugDrawOptions *op
 		cpVect b = cpTransformPoint(body_a->transform, joint->grv_b);
 		cpVect c = cpTransformPoint(body_b->transform, joint->anchorB);
 		
-		options->drawDot(5, c, color, &data);
-		options->drawSegment(a, b, color, &data);
+		options->drawDot(5, c, color, data);
+		options->drawSegment(a, b, color, data);
 	} else if(cpConstraintIsDampedSpring(constraint)){
 		cpDampedSpring *spring = (cpDampedSpring *)constraint;
 		cpDataPointer data = options->data;
@@ -129,8 +129,8 @@ cpSpaceDebugDrawConstraint(cpConstraint *constraint, cpSpaceDebugDrawOptions *op
 		cpVect a = cpTransformPoint(body_a->transform, spring->anchorA);
 		cpVect b = cpTransformPoint(body_b->transform, spring->anchorB);
 		
-		options->drawDot(5, a, color, &data);
-		options->drawDot(5, b, color, &data);
+		options->drawDot(5, a, color, data);
+		options->drawDot(5, b, color, data);
 
 		cpVect delta = cpvsub(b, a);
 		cpFloat cos = delta.x;
@@ -147,7 +147,7 @@ cpSpaceDebugDrawConstraint(cpConstraint *constraint, cpSpaceDebugDrawOptions *op
 		}
 		
 		for(int i=0; i<spring_count-1; i++){
-			options->drawSegment(verts[i], verts[i + 1], color, &data);
+			options->drawSegment(verts[i], verts[i + 1], color, data);
 		}
 	}
 }
@@ -180,7 +180,7 @@ cpSpaceDebugDraw(cpSpace *space, cpSpaceDebugDrawOptions *options)
 				cpFloat d = 2.0f;
 				cpVect a = cpvadd(p1, cpvmult(n, -d));
 				cpVect b = cpvadd(p2, cpvmult(n,  d));
-				draw_seg(a, b, color, &data);
+				draw_seg(a, b, color, data);
 			}
 		}
 	}

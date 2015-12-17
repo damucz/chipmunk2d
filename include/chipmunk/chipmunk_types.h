@@ -91,33 +91,28 @@
 	#define CPFLOAT_MIN FLT_MIN
 #endif
 
-#ifndef cpINFINITY
+#ifndef INFINITY
 	#ifdef _MSC_VER
 		union MSVC_EVIL_FLOAT_HACK
 		{
 			unsigned __int8 Bytes[4];
 			float Value;
 		};
-		static union MSVC_EVIL_FLOAT_HACK cpINFINITY_HACK = {{0x00, 0x00, 0x80, 0x7F}};
-		#define cpINFINITY (cpINFINITY_HACK.Value)
+		static union MSVC_EVIL_FLOAT_HACK INFINITY_HACK = {{0x00, 0x00, 0x80, 0x7F}};
+		#define INFINITY (INFINITY_HACK.Value)
 	#endif
 	
 	#ifdef __GNUC__
-		#define cpINFINITY (__builtin_inf())
+		#define INFINITY (__builtin_inf())
 	#endif
 	
-	#ifndef cpINFINITY
-		#define cpINFINITY (1e1000)
+	#ifndef INFINITY
+		#define INFINITY (1e1000)
 	#endif
 #endif
 
-#ifndef M_PI
-	#define M_PI 3.14159265358979323846264338327950288
-#endif
 
-#ifndef M_E
-	#define M_E 2.71828182845904523536028747135266250
-#endif
+#define CP_PI ((cpFloat)3.14159265358979323846264338327950288)
 
 
 /// Return the max of two cpFloats.
@@ -215,7 +210,7 @@ typedef uint32_t cpCollisionID;
 #endif
 
 #ifdef CP_BITMASK_TYPE
-	typedef CP_BITMASK_TYPE cpLayers;
+	typedef CP_BITMASK_TYPE cpBitmask;
 #else
 /// Type used for cpShapeFilter category and mask.
 	typedef unsigned int cpBitmask;

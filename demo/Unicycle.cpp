@@ -121,7 +121,7 @@ void Unicycle::MotorPreSolve(cpConstraint *motor, cpSpace *space)
 	cpFloat dt = cpSpaceGetCurrentTimeStep(space);
 	
 	cpFloat target_x = th->lastTouchPoint.x;
-	th->DrawSegment(cpv(target_x, -1000.0), cpv(target_x, 1000.0), RGBAColor(1.0, 0.0, 0.0, 1.0), &data);
+	th->DrawSegment(cpv(target_x, -1000.0), cpv(target_x, 1000.0), RGBAColor(1.0, 0.0, 0.0, 1.0), data);
 	
 	cpFloat max_v = 500.0;
 	cpFloat target_v = cpfclamp(bias_coef(0.5, dt/1.2)*(target_x - cpBodyGetPosition(th->balance_body).x)/dt, -max_v, max_v);

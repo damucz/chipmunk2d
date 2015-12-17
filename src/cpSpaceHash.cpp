@@ -515,7 +515,7 @@ cpSpaceHashSegmentQuery(cpSpaceHash *hash, void *obj, cpVect a, cpVect b, cpFloa
 	
 	// Division by zero is *very* slow on ARM
 	cpFloat dx = cpfabs(b.x - a.x), dy = cpfabs(b.y - a.y);
-	cpFloat dt_dx = (dx ? 1.0f/dx : cpINFINITY), dt_dy = (dy ? 1.0f/dy : cpINFINITY);
+	cpFloat dt_dx = (dx ? 1.0f/dx : INFINITY), dt_dy = (dy ? 1.0f/dy : INFINITY);
 	
 	// fix NANs in horizontal directions
 	cpFloat next_h = (temp_h ? temp_h*dt_dx : dt_dx);

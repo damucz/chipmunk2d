@@ -1,3 +1,8 @@
+defines
+{
+	NDEBUG				# disable debug outputs and checks in Chipmunk
+}
+
 files
 {
 	[demo]

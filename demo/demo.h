@@ -43,14 +43,14 @@ public:
     double GetTimestep() const { return timestep; }
     const char* GetMessage() const { return message.c_str(); }
 
-    static void DrawCircle(cpVect p, cpFloat a, cpFloat r, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer *data);
-    static void DrawSegment(cpVect a, cpVect b, cpSpaceDebugColor color, cpDataPointer *data);
-    static void DrawFatSegment(cpVect a, cpVect b, cpFloat r, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer *data);
-    static void DrawPolygon(int count, const cpVect *verts, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer *data);
-    static void DrawDot(cpFloat size, cpVect pos, cpSpaceDebugColor color, cpDataPointer *data);
-    static void DrawBB(cpBB bb, cpSpaceDebugColor outlineColor, cpDataPointer *data);
+    static void DrawCircle(cpVect p, cpFloat a, cpFloat r, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer data);
+    static void DrawSegment(cpVect a, cpVect b, cpSpaceDebugColor color, cpDataPointer data);
+    static void DrawFatSegment(cpVect a, cpVect b, cpFloat r, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer data);
+    static void DrawPolygon(int count, const cpVect *verts, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer data);
+    static void DrawDot(cpFloat size, cpVect pos, cpSpaceDebugColor color, cpDataPointer data);
+    static void DrawBB(cpBB bb, cpSpaceDebugColor outlineColor, cpDataPointer data);
 
-    static cpSpaceDebugColor ColorForShape(cpShape *shape, cpDataPointer *data);
+    static cpSpaceDebugColor ColorForShape(cpShape *shape, cpDataPointer data);
 
     static void ShapeFreeWrap(cpSpace *space, cpShape *shape, void *unused);
     static void PostShapeFree(cpShape *shape, cpSpace *space);

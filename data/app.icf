@@ -25,5 +25,5 @@ DisplayFrameRate=1
 
 [S3E]
 SysStackSize=65536    # defaults to 32768
-MemSize=500000000
-MemSizeDebug=500000000
+MemSize=50000000
+MemSizeDebug=50000000

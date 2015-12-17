@@ -134,7 +134,7 @@ void Slice::Update(double dt)
     if (touchId >= 0)
     {
         cpDataPointer data = this;
-        DrawSegment(sliceStart, lastTouchPoint, RGBAColor(1, 0, 0, 1), &data);
+        DrawSegment(sliceStart, lastTouchPoint, RGBAColor(1, 0, 0, 1), data);
     }
 
     ChipmunkDemo::Update(dt);

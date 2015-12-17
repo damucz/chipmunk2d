@@ -32,7 +32,7 @@ preStep(cpPinJoint *joint, cpFloat dt)
 	
 	cpVect delta = cpvsub(cpvadd(b->p, joint->r2), cpvadd(a->p, joint->r1));
 	cpFloat dist = cpvlength(delta);
-	joint->n = cpvmult(delta, 1.0f/(dist ? dist : (cpFloat)cpINFINITY));
+	joint->n = cpvmult(delta, 1.0f/(dist ? dist : (cpFloat)INFINITY));
 	
 	// calculate mass normal
 	joint->nMass = 1.0f/k_scalar(a, b, joint->r1, joint->r2, joint->n);

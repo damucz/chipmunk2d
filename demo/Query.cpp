@@ -76,7 +76,7 @@ void Query::Update(double dt)
 	cpVect start = QUERY_START;
 	cpVect end = lastTouchPoint;
 	cpFloat radius = 10.0;
-	DrawSegment(start, end, RGBAColor(0,1,0,1), &data);
+	DrawSegment(start, end, RGBAColor(0,1,0,1), data);
 	
     message = "Hold right bottom corner and drag in scene to set raycast vector.\n";
 
@@ -90,13 +90,13 @@ void Query::Update(double dt)
 		cpVect n = segInfo.normal;
 		
 		// Draw blue over the occluded part of the query
-		DrawSegment(cpvlerp(start, end, segInfo.alpha), end, RGBAColor(0,0,1,1), &data);
+		DrawSegment(cpvlerp(start, end, segInfo.alpha), end, RGBAColor(0,0,1,1), data);
 		
 		// Draw a little red surface normal
-		DrawSegment(point, cpvadd(point, cpvmult(n, 16)), RGBAColor(1,0,0,1), &data);
+		DrawSegment(point, cpvadd(point, cpvmult(n, 16)), RGBAColor(1,0,0,1), data);
 		
 		// Draw a little red dot on the hit point.
-		DrawDot(3, point, RGBAColor(1,0,0,1), &data);
+		DrawDot(3, point, RGBAColor(1,0,0,1), data);
 
         snprintf(buf, sizeof(buf), "Segment Query: Dist(%f) Normal(%5.2f, %5.2f)", segInfo.alpha*cpvdist(start, end), n.x, n.y);
 	} else {
@@ -105,17 +105,17 @@ void Query::Update(double dt)
     message += buf;
 	
 	// Draw a fat green line over the unoccluded part of the query
-	DrawFatSegment(start, cpvlerp(start, end, segInfo.alpha), radius, RGBAColor(0,1,0,1), LAColor(0,0), &data);
+	DrawFatSegment(start, cpvlerp(start, end, segInfo.alpha), radius, RGBAColor(0,1,0,1), LAColor(0,0), data);
 	
 	cpPointQueryInfo nearestInfo = {};
 	cpSpacePointQueryNearest(space, lastTouchPoint, 100.0, CP_SHAPE_FILTER_ALL, &nearestInfo);
 	if(nearestInfo.shape){
 		// Draw a grey line to the closest shape.
-		DrawDot(3, lastTouchPoint, RGBAColor(0.5, 0.5, 0.5, 1.0), &data);
-		DrawSegment(lastTouchPoint, nearestInfo.point, 	RGBAColor(0.5, 0.5, 0.5, 1.0), &data);
+		DrawDot(3, lastTouchPoint, RGBAColor(0.5, 0.5, 0.5, 1.0), data);
+		DrawSegment(lastTouchPoint, nearestInfo.point, 	RGBAColor(0.5, 0.5, 0.5, 1.0), data);
 		
 		// Draw a red bounding box around the shape under the mouse.
-		if(nearestInfo.distance < 0) DrawBB(cpShapeGetBB(nearestInfo.shape), RGBAColor(1,0,0,1), &data);
+		if(nearestInfo.distance < 0) DrawBB(cpShapeGetBB(nearestInfo.shape), RGBAColor(1,0,0,1), data);
 	}
 }
 

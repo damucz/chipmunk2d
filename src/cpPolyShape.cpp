@@ -43,8 +43,8 @@ cpPolyShapeCacheData(cpPolyShape *poly, cpTransform transform)
 	struct cpSplittingPlane *dst = poly->planes;
 	struct cpSplittingPlane *src = dst + count;
 	
-	cpFloat l = (cpFloat)cpINFINITY, r = -(cpFloat)cpINFINITY;
-	cpFloat b = (cpFloat)cpINFINITY, t = -(cpFloat)cpINFINITY;
+	cpFloat l = (cpFloat)INFINITY, r = -(cpFloat)INFINITY;
+	cpFloat b = (cpFloat)INFINITY, t = -(cpFloat)INFINITY;
 	
 	for(int i=0; i<count; i++){
 		cpVect v = cpTransformPoint(transform, src[i].v0);
@@ -70,14 +70,14 @@ cpPolyShapePointQuery(cpPolyShape *poly, cpVect p, cpPointQueryInfo *info){
 	cpFloat r = poly->r;
 	
 	cpVect v0 = planes[count - 1].v0;
-	cpFloat minDist = cpINFINITY;
+	cpFloat minDist = INFINITY;
 	cpVect closestPoint = cpvzero;
 	cpVect closestNormal = cpvzero;
 	cpBool outside = cpFalse;
 	
 	for(int i=0; i<count; i++){
 		cpVect v1 = planes[i].v0;
-		if(cpvdot(planes[i].n, cpvsub(p, v1)) > 0.0f) outside = cpTrue;
+		outside = outside || (cpvdot(planes[i].n, cpvsub(p,v1)) > 0.0f);
 		
 		cpVect closest = cpClosetPointOnSegment(p, v0, v1);
 		
@@ -213,6 +213,12 @@ cpShape *
 cpPolyShapeNew(cpBody *body, int count, const cpVect *verts, cpTransform transform, cpFloat radius)
 {
 	return (cpShape *)cpPolyShapeInit(cpPolyShapeAlloc(), body, count, verts, transform, radius);
+}
+
+cpShape *
+cpPolyShapeNewRaw(cpBody *body, int count, const cpVect *verts, cpFloat radius)
+{
+	return (cpShape *)cpPolyShapeInitRaw(cpPolyShapeAlloc(), body, count, verts, radius);
 }
 
 cpPolyShape *

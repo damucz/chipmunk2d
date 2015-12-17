@@ -220,7 +220,7 @@ ComponentActive(cpBody *root, cpFloat threshold)
 void
 cpSpaceProcessComponents(cpSpace *space, cpFloat dt)
 {
-	cpBool sleep = (space->sleepTimeThreshold != cpINFINITY);
+	cpBool sleep = (space->sleepTimeThreshold != INFINITY);
 	cpArray *bodies = space->dynamicBodies;
 	
 #ifndef NDEBUG
@@ -318,7 +318,7 @@ cpBodySleepWithGroup(cpBody *body, cpBody *group){
 	
 	cpSpace *space = body->space;
 	cpAssertHard(!cpSpaceIsLocked(space), "Bodies cannot be put to sleep during a query or a call to cpSpaceStep(). Put these calls into a post-step callback.");
-	cpAssertHard(cpSpaceGetSleepTimeThreshold(space) < cpINFINITY, "Sleeping is not enabled on the space. You cannot sleep a body without setting a sleep time threshold on the space.");
+	cpAssertHard(cpSpaceGetSleepTimeThreshold(space) < INFINITY, "Sleeping is not enabled on the space. You cannot sleep a body without setting a sleep time threshold on the space.");
 	cpAssertHard(group == NULL || cpBodyIsSleeping(group), "Cannot use a non-sleeping body as a group identifier.");
 	
 	if(cpBodyIsSleeping(body)){

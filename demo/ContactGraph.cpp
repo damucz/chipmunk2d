@@ -78,7 +78,7 @@ void ContactGraph::BallIterator(cpBody *body, cpArbiter *arb, BallIteratorContex
 	// CP_ARBITER_GET_*() in an arbiter iterator always returns the body/shape for the iterated body first.
 	CP_ARBITER_GET_SHAPES(arb, ball, other);
     cpDataPointer data = context->th;
-	context->th->DrawBB(cpShapeGetBB(other), RGBAColor(1, 0, 0, 1), &data);
+	context->th->DrawBB(cpShapeGetBB(other), RGBAColor(1, 0, 0, 1), data);
 
 	context->count++;
 }

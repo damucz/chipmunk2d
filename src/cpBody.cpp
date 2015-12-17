@@ -104,7 +104,7 @@ cpBodyFree(cpBody *body)
 	#define	cpAssertSaneBody(body)
 #else
 	static void cpv_assert_nan(cpVect v, const char *message){cpAssertHard(v.x == v.x && v.y == v.y, message);}
-	static void cpv_assert_infinite(cpVect v, const char *message){cpAssertHard(cpfabs(v.x) != cpINFINITY && cpfabs(v.y) != cpINFINITY, message);}
+	static void cpv_assert_infinite(cpVect v, const char *message){cpAssertHard(cpfabs(v.x) != INFINITY && cpfabs(v.y) != INFINITY, message);}
 	static void cpv_assert_sane(cpVect v, const char *message){cpv_assert_nan(v, message); cpv_assert_infinite(v, message);}
 	
 	static void
@@ -119,9 +119,9 @@ cpBodyFree(cpBody *body)
 		cpv_assert_sane(body->v, "Body's velocity is invalid.");
 		cpv_assert_sane(body->f, "Body's force is invalid.");
 
-		cpAssertHard(body->a == body->a && cpfabs(body->a) != cpINFINITY, "Body's angle is invalid.");
-		cpAssertHard(body->w == body->w && cpfabs(body->w) != cpINFINITY, "Body's angular velocity is invalid.");
-		cpAssertHard(body->t == body->t && cpfabs(body->t) != cpINFINITY, "Body's torque is invalid.");
+		cpAssertHard(body->a == body->a && cpfabs(body->a) != INFINITY, "Body's angle is invalid.");
+		cpAssertHard(body->w == body->w && cpfabs(body->w) != INFINITY, "Body's angular velocity is invalid.");
+		cpAssertHard(body->t == body->t && cpfabs(body->t) != INFINITY, "Body's torque is invalid.");
 	}
 	
 	#define	cpAssertSaneBody(body) cpBodySanityCheck(body)
@@ -136,9 +136,9 @@ cpBodyIsSleeping(const cpBody *body)
 cpBodyType
 cpBodyGetType(cpBody *body)
 {
-	if(body->sleeping.idleTime == cpINFINITY){
+	if(body->sleeping.idleTime == INFINITY){
 		return CP_BODY_TYPE_STATIC;
-	} else if(body->m == cpINFINITY){
+	} else if(body->m == INFINITY){
 		return CP_BODY_TYPE_KINEMATIC;
 	} else {
 		return CP_BODY_TYPE_DYNAMIC;
@@ -153,15 +153,15 @@ cpBodySetType(cpBody *body, cpBodyType type)
 	
 	// Static bodies have their idle timers set to infinity.
 	// Non-static bodies should have their idle timer reset.
-	body->sleeping.idleTime = (type == CP_BODY_TYPE_STATIC ? cpINFINITY : 0.0f);
+	body->sleeping.idleTime = (type == CP_BODY_TYPE_STATIC ? INFINITY : 0.0f);
 	
 	if(type == CP_BODY_TYPE_DYNAMIC){
 		body->m = body->i = 0.0f;
-		body->m_inv = body->i_inv = cpINFINITY;
+		body->m_inv = body->i_inv = INFINITY;
 		
 		cpBodyAccumulateMassFromShapes(body);
 	} else {
-		body->m = body->i = cpINFINITY;
+		body->m = body->i = INFINITY;
 		body->m_inv = body->i_inv = 0.0f;
 		
 		body->v = cpvzero;
@@ -254,7 +254,7 @@ void
 cpBodySetMass(cpBody *body, cpFloat mass)
 {
 	cpAssertHard(cpBodyGetType(body) == CP_BODY_TYPE_DYNAMIC, "You cannot set the mass of kinematic or static bodies.");
-	cpAssertHard(0.0f <= mass && mass < cpINFINITY, "Mass must be positive and finite.");
+	cpAssertHard(0.0f <= mass && mass < INFINITY, "Mass must be positive and finite.");
 	
 	cpBodyActivate(body);
 	body->m = mass;

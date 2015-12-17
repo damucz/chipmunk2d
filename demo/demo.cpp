@@ -235,9 +235,6 @@ void ChipmunkDemo::Destroy()
         cpSpaceFree(space);
     }
 
-    if (shader)
-        delete shader;
-
     if (resGroup)
         IwGetResManager()->DestroyGroup(resGroup);
 }
@@ -343,7 +340,7 @@ void ChipmunkDemo::PostBodyFree( cpBody *body, cpSpace *space )
     cpSpaceAddPostStepCallback(space, (cpPostStepFunc)BodyFreeWrap, body, NULL);
 }
 
-cpSpaceDebugColor ChipmunkDemo::ColorForShape( cpShape *shape, cpDataPointer *data )
+cpSpaceDebugColor ChipmunkDemo::ColorForShape( cpShape *shape, cpDataPointer data )
 {
     if(cpShapeGetSensor(shape)){
         return LAColor(1.0f, 0.1f);
@@ -389,9 +386,9 @@ cpSpaceDebugColor ChipmunkDemo::ColorForShape( cpShape *shape, cpDataPointer *da
     }
 }
 
-void ChipmunkDemo::DrawCircle( cpVect pos, cpFloat angle, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer *data )
+void ChipmunkDemo::DrawCircle( cpVect pos, cpFloat angle, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer data )
 {
-    ChipmunkDemo* t = static_cast<ChipmunkDemo*>(*data);
+    ChipmunkDemo* t = static_cast<ChipmunkDemo*>(data);
 
     cpFloat r = radius + 1.0f/ChipmunkDebugDrawPointLineScale;
 
@@ -421,17 +418,17 @@ void ChipmunkDemo::DrawCircle( cpVect pos, cpFloat angle, cpFloat radius, cpSpac
 //    ChipmunkDebugDrawCircle(p, a, r, outline, fill);
 }
 
-void ChipmunkDemo::DrawSegment( cpVect a, cpVect b, cpSpaceDebugColor color, cpDataPointer *data )
+void ChipmunkDemo::DrawSegment( cpVect a, cpVect b, cpSpaceDebugColor color, cpDataPointer data )
 {
-    //ChipmunkDemo* t = static_cast<ChipmunkDemo*>(*data);
+    //ChipmunkDemo* t = static_cast<ChipmunkDemo*>(data);
 
     DrawFatSegment(a, b, 0.0f, color, color, data);
 //    ChipmunkDebugDrawSegment(a, b, color);
 }
 
-void ChipmunkDemo::DrawFatSegment( cpVect a, cpVect b, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer *data )
+void ChipmunkDemo::DrawFatSegment( cpVect a, cpVect b, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer data )
 {
-    ChipmunkDemo* th = static_cast<ChipmunkDemo*>(*data);
+    ChipmunkDemo* th = static_cast<ChipmunkDemo*>(data);
 
     Triangle tri;
 
@@ -487,9 +484,9 @@ void ChipmunkDemo::DrawFatSegment( cpVect a, cpVect b, cpFloat radius, cpSpaceDe
 //    ChipmunkDebugDrawFatSegment(a, b, r, outline, fill);
 }
 
-void ChipmunkDemo::DrawPolygon( int count, const cpVect *verts, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer *data )
+void ChipmunkDemo::DrawPolygon( int count, const cpVect *verts, cpFloat radius, cpSpaceDebugColor outline, cpSpaceDebugColor fill, cpDataPointer data )
 {
-    ChipmunkDemo* t = static_cast<ChipmunkDemo*>(*data);
+    ChipmunkDemo* t = static_cast<ChipmunkDemo*>(data);
 
     struct ExtrudeVerts {cpVect offset, n;};
     size_t bytes = sizeof(ExtrudeVerts)*count;
@@ -575,9 +572,9 @@ void ChipmunkDemo::DrawPolygon( int count, const cpVect *verts, cpFloat radius, 
 //    ChipmunkDebugDrawPolygon(count, verts, r, outline, fill);
 }
 
-void ChipmunkDemo::DrawDot( cpFloat size, cpVect pos, cpSpaceDebugColor color, cpDataPointer *data )
+void ChipmunkDemo::DrawDot( cpFloat size, cpVect pos, cpSpaceDebugColor color, cpDataPointer data )
 {
-    ChipmunkDemo* t = static_cast<ChipmunkDemo*>(*data);
+    ChipmunkDemo* t = static_cast<ChipmunkDemo*>(data);
 
     cpFloat r = size*0.5/ChipmunkDebugDrawPointLineScale;
     cpVect a = {pos.x - r, pos.y - r};
@@ -603,7 +600,7 @@ void ChipmunkDemo::DrawDot( cpFloat size, cpVect pos, cpSpaceDebugColor color, c
 //    ChipmunkDebugDrawDot(size, pos, color);
 }
 
-void ChipmunkDemo::DrawBB( cpBB bb, cpSpaceDebugColor outlineColor, cpDataPointer *data )
+void ChipmunkDemo::DrawBB( cpBB bb, cpSpaceDebugColor outlineColor, cpDataPointer data )
 {
     cpVect verts[] = {
         cpv(bb.r, bb.b),
